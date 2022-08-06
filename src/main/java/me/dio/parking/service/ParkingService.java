@@ -9,21 +9,23 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import me.dio.parking.exception.ParkingNotFoundException;
 import me.dio.parking.model.Parking;
 
 @Service
 public class ParkingService {
 	
 	private static Map<String, Parking> parkingMap = new HashMap<>();
-	
+	/*
 	static {
 		var id = getUUID();
-		var id1 = getUUID();
+		//var id1 = getUUID();
 		Parking parking = new Parking(id, "MJT 4931", "SC", "Virtus", "Preto");
-		Parking parking1 = new Parking(id1, "XWS 0007", "SC", "Honda Fit", "Prata");
+		//Parking parking1 = new Parking(id1, "XWS 0007", "SC", "Honda Fit", "Prata");
 		parkingMap.put(id, parking);
-		parkingMap.put(id1, parking1);
+		//parkingMap.put(id1, parking1);
 	}
+	*/
 	
 	public List<Parking> findAll() {
 			
@@ -36,7 +38,13 @@ public class ParkingService {
 	}
 
 	public Parking findById(String id) {
-		return parkingMap.get(id);
+		
+		Parking parking = parkingMap.get(id);
+		
+		if(parking == null) {
+			throw new ParkingNotFoundException(id);
+		}		
+		return parking;
 	}
 
 	public Parking create(Parking parkingCreate) {
@@ -45,6 +53,24 @@ public class ParkingService {
 		parkingCreate.setEntryDate(LocalDateTime.now());
 		parkingMap.put(uuid, parkingCreate);
 		return parkingCreate;
+	}
+
+	public void delete(String id) {
+		findById(id);
+		parkingMap.remove(id);
+	}
+
+
+	public Parking update(String id, Parking parkingCreate) {
+		Parking parking = findById(id);
+		parking.setColor(parkingCreate.getColor());
+		parkingMap.replace(id, parking);
+		return parking;
+	}
+
+	public Parking exit(String id) {
+		// TODO Auto-generated method stub
+		return null;
 	}	
 
 }
